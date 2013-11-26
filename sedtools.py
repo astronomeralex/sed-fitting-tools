@@ -9,19 +9,18 @@ class Flux(object):
     """
     this flux class will contain a single photometric measurement
     """
-    def __init__(self,flux,err,bandpass,silent=False):
+    def __init__(self,flux,err,bandpassfile,silent=False):
         self.flux = flux
         self.err = err
-        self.filter = Filter(bandpass,silent)
+        self.filter = Filter(bandpassfile,silent)
     
 class Filter(object):
     """
     the class contains information on the filter, including the name,
     location of the file describing the transmission, and the central wavelength
     """
-    def __init__(self,name,silent = False):
-        self.name = name
-        self.transfile = 'filtercurves/'+self.name + '.res' #the location of the transmission file
+    def __init__(self,bandpassfile,silent = False):
+        self.transfile = bandpassfile #the location of the transmission file
         #now check and see if the transmission file exists
         if os.path.exists(self.transfile):
             transfile = open(self.transfile)
@@ -56,13 +55,17 @@ class Galaxy(object):
     pass
 
 class SEDfitter(object):
-    __metaclass = ABCMeta
+    __metaclass__ = ABCMeta
     
     #@abstractmethod
     #put methods SED fitters must have here
 
 
-
+class ComputingBackend(object):
+    __metaclass__ = ABCMeta
+    
+    #@abstractmethod
+    #put methods SED fitters must have here
 
 
 
