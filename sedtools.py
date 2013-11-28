@@ -50,22 +50,37 @@ class Filter(object):
             if not silent:
                 print "Can't find transmission file at " + self.transfile
 
+################################################################################
 
 class Galaxy(object):
     pass
+
+################################################################################
 
 class SEDfitter(object):
     __metaclass__ = ABCMeta
     
     #@abstractmethod
     #put methods SED fitters must have here
+    
+    
+class GalMC(SEDfitter):
+    pass
 
+
+################################################################################
 
 class ComputingBackend(object):
     __metaclass__ = ABCMeta
     
     #@abstractmethod
     #put methods SED fitters must have here
+    
+class PBSBackend(ComputingBackend):
+    pass
+    
+class LocalBackend(ComputingBackend):
+    pass
 
 
 
