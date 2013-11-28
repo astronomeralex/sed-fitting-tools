@@ -5,6 +5,8 @@
 
 from abc import ABCMeta, abstractmethod
 
+################################################################################
+
 class Flux(object):
     """
     this flux class will contain a single photometric measurement
@@ -14,6 +16,8 @@ class Flux(object):
         self.err = err
         self.filter = Filter(bandpassfile,silent)
     
+################################################################################
+
 class Filter(object):
     """
     the class contains information on the filter, including the name,
@@ -53,7 +57,16 @@ class Filter(object):
 ################################################################################
 
 class Galaxy(object):
-    pass
+    """
+    
+    """
+    def __init__(self, name, fluxlist, redshift):
+        """
+        
+        """
+        self.name = name
+        self.z = redshift
+        self.photometry = fluxlist
 
 ################################################################################
 
@@ -73,11 +86,19 @@ class GalMC(SEDfitter):
 class ComputingBackend(object):
     __metaclass__ = ABCMeta
     
-    #@abstractmethod
-    #put methods SED fitters must have here
-    
+    @abstractmethod
+    def run(self):
+        """
+        
+        """
+        
 class PBSBackend(ComputingBackend):
-    pass
+    """
+    
+    """
+    
+    def run(self):
+        pass
     
 class LocalBackend(ComputingBackend):
     pass
