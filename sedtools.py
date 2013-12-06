@@ -4,6 +4,8 @@
 # mr.alex.hagen@gmail.com
 
 from abc import ABCMeta, abstractmethod
+import numpy as np
+import copy
 
 ################################################################################
 
@@ -53,6 +55,8 @@ class Filter(object):
         else:
             if not silent:
                 print "Can't find transmission file at " + self.transfile
+                
+    def 
 
 ################################################################################
 
@@ -64,9 +68,23 @@ class Galaxy(object):
         """
         
         """
+        
         self.name = name
         self.z = redshift
-        self.photometry = fluxlist
+        self.fluxlist = fluxlist
+        self.sedfluxlist = []
+        
+        #make sure all filter objects have central wavelengths, etc
+        for i in fluxlist:
+            if not hasattr(i.filter,"central"):
+                print i.filter.transfile + "doesn't exist -- this filter " + \
+                    "won't be included in the SED fit"
+            else:
+                self.sedfluxlist.append(i)
+        
+        
+    def __str__(self):
+        return "Galaxy: str(self.name) + " z=" + "%.3f" %self.z 
 
 ################################################################################
 
