@@ -6,6 +6,10 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import copy
+import logging
+
+logger = logging.getLogger('sedtools')
+logger.setLevel(logging.WARNING)
 
 ################################################################################
 
@@ -54,7 +58,7 @@ class Filter(object):
             
         else:
             if not silent:
-                print "Can't find transmission file at " + self.transfile
+                logger.warning("Can't find transmission file at " + self.transfile)
                 
     def 
 
@@ -68,6 +72,23 @@ class Galaxy(object):
         """
         
         """
+        #sanity checking the inputs
+        if len(fluxlist) == 0:
+            logger.critical("Input fluxlist is length zero")
+        elif False in [isinstance(Flux,i) for i in fluxlist]:
+            raise TypeError("Input fluxlist should only contain instance of Flux")
+            
+        if type(name) != (str or int):
+            logger.critical("Galaxy name is not a string or integer -- output filesnames could have problems!")
+            
+        if type(redshift) != float:
+            try: 
+                inputztype = type(redshift)
+                redshift = float(redshift)
+                logger.info("Cast redshift from input " + str(inputztype) + "to float")
+            except ValueError:
+                raise ValueError("Galaxy redshift input of type " + str(inputztype) + " cannot be cast to float!")
+        
         
         self.name = name
         self.z = redshift
@@ -77,10 +98,13 @@ class Galaxy(object):
         #make sure all filter objects have central wavelengths, etc
         for i in fluxlist:
             if not hasattr(i.filter,"central"):
-                print i.filter.transfile + "doesn't exist -- this filter " + \
-                    "won't be included in the SED fit"
+                logger.warning(i.filter.transfile + "doesn't exist -- this filter " + \
+                    "won't be included in the SED fit")
             else:
                 self.sedfluxlist.append(i)
+                
+        if len(sedfluxlist) == 0:
+            logger.critical("")
         
         
     def __str__(self):
