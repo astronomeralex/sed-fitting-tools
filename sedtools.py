@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import copy
 import logging
+import pp
 
 logger = logging.getLogger('sedtools')
 logger.setLevel(logging.WARNING)
@@ -17,10 +18,13 @@ class Flux(object):
     """
     this flux class will contain a single photometric measurement
     """
-    def __init__(self,flux,err,bandpassfile):
+    def __init__(self, flux, err, bandpassfile, units=None):
         self.flux = flux
         self.err = err
         self.filter = Filter(bandpassfile)
+        if units is None:
+            logger.info("Units for flux object not defined")
+        self.units = units
     
 ################################################################################
 
@@ -58,8 +62,6 @@ class Filter(object):
             
         else:
             logger.error("Can't find transmission file at " + self.transfile)
-                
-    def 
 
 ################################################################################
 
@@ -120,7 +122,12 @@ class Galaxy(object):
     def __str__(self):
         return "Galaxy: "+ str(self.name) + " z=" + "%.3f" %self.z
         
-
+    def homogenize_photometry(self,fluxunit):
+        """
+        
+        """
+        pass
+        #use astropy.units?
 
 ################################################################################
 
@@ -155,7 +162,16 @@ class PBSBackend(ComputingBackend):
         pass
     
 class LocalBackend(ComputingBackend):
-    pass
+    """
+    
+    """
+    def __init__(self,**kwargs):
+        """
+        used pp for local stuffs
+        """
+        self.ppserver = pp.Server(kwargs)
+        
+        
 
 
 
