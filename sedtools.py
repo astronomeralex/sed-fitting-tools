@@ -8,9 +8,9 @@ import numpy as np
 import copy
 import logging
 import pp
+import os
 
-logger = logging.getLogger('sedtools')
-logger.setLevel(logging.WARNING)
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 ################################################################################
 
@@ -23,7 +23,7 @@ class Flux(object):
         self.err = err
         self.filter = Filter(bandpassfile)
         if units is None:
-            logger.info("Units for flux object not defined")
+            logging.info("Units for flux object not defined")
         self.units = units
     
 ################################################################################
@@ -61,7 +61,7 @@ class Filter(object):
             self.long10 = waves[np.where(trans > 0.1)[0][-1]]
             
         else:
-            logger.error("Can't find transmission file at " + self.transfile)
+            logging.error("Can't find transmission file at " + self.transfile)
 
 ################################################################################
 
@@ -76,14 +76,14 @@ class Galaxy(object):
         #sanity checking the inputs
         if len(fluxlist) == 0:
             raise ValueError("Input fluxlist is length zero")
-        elif False in [isinstance(Flux,i) for i in fluxlist]:
+        elif False in [isinstance(i,Flux) for i in fluxlist]:
             raise TypeError("Input fluxlist should only contain instance of Flux")
             
         if type(name) != str:
             try:
                 nametype = type(str)
                 name = str(name)
-                logger.info("Galaxy name cast from " + str(nametype) + "to string: name is " + name)
+                logging.info("Galaxy name cast from " + str(nametype) + "to string: name is " + name)
             except ValueError:
                 raise ValueError("Galaxy name input of type " + str(nametype) + " cannot be cast to string")
             
@@ -91,7 +91,7 @@ class Galaxy(object):
             try: 
                 inputztype = type(redshift)
                 redshift = float(redshift)
-                logger.info("Redshift cast from input " + str(inputztype) + "to float: z = " + str(redshift))
+                logging.info("Redshift cast from input " + str(inputztype) + "to float: z = " + str(redshift))
             except ValueError:
                 raise ValueError("Galaxy redshift input of type " + str(inputztype) + " cannot be cast to float!")
         if redshift < 0:
@@ -105,13 +105,13 @@ class Galaxy(object):
         #make sure all filter objects have central wavelengths, etc
         for i in fluxlist:
             if not hasattr(i.filter,"central"):
-                logger.warning(i.filter.transfile + "doesn't exist -- this filter " + \
+                logging.warning(i.filter.transfile + "doesn't exist -- this filter " + \
                     "won't be included in the SED fit")
             else:
                 self.sedfluxlist.append(i)
                 
-        if len(sedfluxlist) == 0:
-            logger.critical("Fluxlist for SED fitting is length zero")
+        if len(self.sedfluxlist) == 0:
+            logging.critical("Fluxlist for SED fitting is length zero")
         else:
             #sort fluxlist by central filter wavelength
             self.sedfluxlist.sort(key = lambda x: x.filter.central)
@@ -134,9 +134,15 @@ class Galaxy(object):
 class SEDfitter(object):
     __metaclass__ = ABCMeta
     
-    #@abstractmethod
-    #put methods SED fitters must have here
+    @abstractmethod
+    def prepare(self):
+        """this method will make any necessary folders and files
+        and the job will be ready to submit"""
     
+    @abstractmethod
+    def submit(self):
+        """this method will submit the galaxy for 
+        SED fitting using the given backend"""
     
 class GalMC(SEDfitter):
     pass
