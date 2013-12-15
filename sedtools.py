@@ -145,10 +145,22 @@ class SEDfitter(object):
         """this method will submit the galaxy for 
         SED fitting using the given backend"""
         
-    @abstractmethod
-    def cleanphotometry(self, galaxy)
+    def cleanphotometry(self, galaxy):
         """
+        
         """
+        sedphot = []
+        redlim = self.photlims[0]
+        bluelim = self.photlims[1]
+        for i in galaxy.sedfluxlist:
+            if i.filter.short10 > bluelim and i.filter.long10 < redlim:
+                sedphot.append(i)
+            else:
+                if i.filter.short10 < bluelim:
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too blue")
+                else:
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too red")
+        galaxy.cleansedphot = sedphot
         
 class GalMC(SEDfitter):
     """
@@ -197,23 +209,6 @@ class GalMC(SEDfitter):
         
         """
         pass
-
-    def cleanphotometry(self, galaxy):
-        """
-        
-        """
-        sedphot = []
-        redlim = self.photlims[0]
-        bluelim = self.photlims[1]
-        for i in galaxy.sedfluxlist:
-            if i.filter.short10 > bluelim and i.filter.long10 < redlim:
-                sedphot.append(i)
-            else:
-                if i.filter.short10 < bluelim:
-                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too blue")
-                else:
-                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too red")
-        galaxy.cleansedphot = sedphot
         
 
 ################################################################################
