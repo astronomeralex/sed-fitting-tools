@@ -143,10 +143,50 @@ class SEDfitter(object):
     def submit(self):
         """this method will submit the galaxy for 
         SED fitting using the given backend"""
-    
+        
 class GalMC(SEDfitter):
-    pass
+    """
+    
+    """
+    def __init__(self, paramfilename, depfile):
+        """
+        
+        """
+        #see if input paramfile exists TODO: make sure paramfile is sane?
+        try:
+            paramfileobj = open(paramfilename)
+            self.paramfile = paramfileobj.readlines()
+            paramfileobj.close()
+            self.paramfilename = paramfilename
+        except IOError:
+            raise IOError(paramfilename + " not found")
+            
+        #see if dependent file path exists and is a directory or a file
+        if os.path.exists(depfile):
+            if os.path.isfile(depfile):
+                self.depfile = depfile
+                self.deptype = 'file'
+            elif os.path.isdir(depfile):
+                self.depfile = depfile
+                self.deptype = "dir"
+            else:
+                raise IOError(depfile + " isn't a file or directory...something \
+                has gone terribly wrong")
+        else:
+            raise IOError(depfile + "doesn't exist")
+            
+    def prepare(self):
+        """           
+        """
+        pass
+        
+    def submit(self):
+        """
+        
+        """
+        pass
 
+        
 
 ################################################################################
 
