@@ -59,6 +59,7 @@ class Filter(object):
             #this is useful for determining if NIR filters could be contaminated by
             #3.3um PAH feature
             self.long10 = waves[np.where(trans > 0.1)[0][-1]]
+            self.short10 = waves[np.where(trans > 0.1)[0][0]]
             
         else:
             logging.error("Can't find transmission file at " + self.transfile)
@@ -144,11 +145,16 @@ class SEDfitter(object):
         """this method will submit the galaxy for 
         SED fitting using the given backend"""
         
+    @abstractmethod
+    def cleanphotometry(self, galaxy)
+        """
+        """
+        
 class GalMC(SEDfitter):
     """
     
     """
-    def __init__(self, paramfilename, depfile):
+    def __init__(self, paramfilename, depfile, photlimits = (0,30000)):
         """
         
         """
@@ -174,11 +180,17 @@ class GalMC(SEDfitter):
                 has gone terribly wrong")
         else:
             raise IOError(depfile + "doesn't exist")
-            
+        
+        #TODO: checks for photlimits
+        self.photlimits = photlimits
+        
     def prepare(self):
-        """           
+        """
+        
         """
         pass
+        #part of this should make sure all photometry is within photlims and
+        #if not put it though clean photometry
         
     def submit(self):
         """
@@ -186,6 +198,22 @@ class GalMC(SEDfitter):
         """
         pass
 
+    def cleanphotometry(self, galaxy):
+        """
+        
+        """
+        sedphot = []
+        redlim = self.photlims[0]
+        bluelim = self.photlims[1]
+        for i in galaxy.sedfluxlist:
+            if i.filter.short10 > bluelim and i.filter.long10 < redlim:
+                sedphot.append(i)
+            else:
+                if i.filter.short10 < bluelim:
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too blue")
+                else:
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too red")
+        galaxy.cleansedphot = sedphot
         
 
 ################################################################################
