@@ -78,7 +78,7 @@ class Galaxy(object):
         if len(fluxlist) == 0:
             raise ValueError("Input fluxlist is length zero")
         elif False in [isinstance(i,Flux) for i in fluxlist]:
-            raise TypeError("Input fluxlist should only contain instance of Flux")
+            raise TypeError("Input fluxlist should only contain instances of Flux")
             
         if type(name) != str:
             try:
@@ -168,14 +168,15 @@ class GalMC(SEDfitter):
     """
     def __init__(self, paramfilename, depfile, photlimits = (0,30000)):
         """
-        
+        paramfilename is the parameter file
+        depfile is the file or folder of dependencies needed for the sedfit
         """
         #see if input paramfile exists TODO: make sure paramfile is sane?
         try:
-            paramfileobj = open(paramfilename)
+            self.paramfilename = paramfilename
+            paramfileobj = open(self.paramfilename)
             self.paramfile = paramfileobj.readlines()
             paramfileobj.close()
-            self.paramfilename = paramfilename
         except IOError:
             raise IOError(paramfilename + " not found")
             
@@ -193,18 +194,11 @@ class GalMC(SEDfitter):
         else:
             raise IOError(depfile + "doesn't exist")
         
-        #TODO: checks for photlimits
+        assert len(photlimits) == 2
+        assert photlimits[0] < photlimits[1]
         self.photlimits = photlimits
         
-    def prepare(self):
-        """
-        
-        """
-        pass
-        #part of this should make sure all photometry is within photlims and
-        #if not put it though clean photometry
-        
-    def submit(self):
+    def submit(self, backend, galaxy):
         """
         
         """
