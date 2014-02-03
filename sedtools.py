@@ -197,12 +197,37 @@ class GalMC(SEDfitter):
         assert len(photlimits) == 2
         assert photlimits[0] < photlimits[1]
         self.photlimits = photlimits
+    
+    def writedata(self, galaxy):
+        """
+        this method will write out the data file in standard GalMC format 
+        wavelength flux density error (in microJy)
+        """ 
+        datafile = open(str(galaxy.name)+'.dat','w')
+        for i in galaxy.cleansedphot:
+            centralwave = str(i.filter.central)
+            flux = str(i.flux)
+            err = str(i.err)
+            outline = centralwave + ' ' + flux + ' ' + err + '\n'
+            datafile.write(outline)
+        datafile.close()
         
-    def submit(self, backend, galaxy):
+    def submit(self, backend, galaxy, numchains):
         """
         
         """
-        pass
+        #first some sanity checks on the inputs
+        assert type(numchains) == int
+        assert numchains > 0
+        
+        #it assumes that it is SED fitting in a new directory and will overwrite previous sed versions
+        #make the new directory
+        rootdir = os.getcwd()
+        galaxydir = str(galaxy.name)
+        os.mkdir(hpsdir)
+        os.chdir(hpsdir)
+        
+        
         
 
 ################################################################################
