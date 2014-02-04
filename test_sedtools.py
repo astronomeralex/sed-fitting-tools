@@ -25,3 +25,10 @@ def test_filter_class():
     assert hasattr(filterobj, 'waves')
     assert hasattr(filterobj, 'long10')
     assert hasattr(filterobj, 'short10')
+    
+def test_galaxy_class():
+    f1 = Flux(5.0,1.0,'test_data/SubB.res')
+    f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
+    fluxlist = [f1,f2]
+    name = "test_gal"
+    testgal = Galaxy(name,fluxlist,1.0)
