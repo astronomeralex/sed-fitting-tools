@@ -22,6 +22,8 @@ class Flux(object):
     """
     def __init__(self, flux, err, bandpassfile, units=None):
         self.flux = flux
+        if err < 0:
+            raise ValueError("Input error is less than zero")
         self.err = err
         self.filter = Filter(bandpassfile)
         if units is None:
