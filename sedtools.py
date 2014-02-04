@@ -155,7 +155,7 @@ class SEDfitter(object):
         redlim = self.photlims[0]
         bluelim = self.photlims[1]
         for i in galaxy.sedfluxlist:
-            if i.filter.short10 > bluelim and i.filter.long10 < redlim:
+            if (i.filter.short10 > bluelim) and (i.filter.long10 < redlim):
                 sedphot.append(i)
             else:
                 if i.filter.short10 < bluelim:
@@ -183,7 +183,6 @@ class GalMC(SEDfitter):
         except IOError:
             raise IOError(paramfilename + " not found")
             
-        #see if dependent file path exists and is a directory or a file
         if os.path.exists(depfile):
             self.depfile = depfile
         else:
