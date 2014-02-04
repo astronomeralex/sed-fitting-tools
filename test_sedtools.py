@@ -8,4 +8,7 @@ def test_flux_class():
     assert hasattr(fluxobj, 'err')
     assert hasattr(fluxobj, 'filter')
     assert hasattr(fluxobj, 'units')
+    assert_almost_equal(fluxobj.flux,5.0)
+    assert_almost_equal(fluxobj.err,1.0)
+    
     
