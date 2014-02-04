@@ -29,6 +29,35 @@ def test_filter_class():
 def test_galaxy_class():
     f1 = Flux(5.0,1.0,'test_data/SubB.res')
     f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
-    fluxlist = [f1,f2]
+    f3 = Flux(20.0, 5.0,"")
+    fluxlist = [f1,f2,f3]
     name = "test_gal"
     testgal = Galaxy(name,fluxlist,1.0)
+    assert type(testgal) == Galaxy
+    assert hasattr(testgal, "name")
+    assert hasattr(testgal, "fluxlist")
+    assert hasattr(testgal, "z")
+    assert hasattr(testgal, "sedfluxlist")
+    assert len(testgal.fluxlist) == 3
+    assert len(testgal.sedfluxlist) == 2
+    #test sorting of sedfluxlist
+    for i in xrange(len(testgal.sedfluxlist) - 1):
+        assert testgal.sedfluxlist[i].filter.central < testgal.sedfluxlist[i + 1].filter.central
+        
+def test_galaxy_badinputs():
+    f1 = Flux(5.0,1.0,'test_data/SubB.res')
+    f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
+    f3 = Flux(20.0, 5.0,"")
+    fluxlist = [f1,f2,f3]
+    name = "test_gal"
+    #testing fluxlist
+    with pytest.raises(TypeError):
+        testgal = Galaxy(name, [5,6], 1.0)
+    with pytest.raises(ValueError):
+        testgal = Galaxy(name, [], 1.0)
+    #testing redshift
+    with pytest.raises(ValueError):
+        testgal = Galaxy(name, fluxlist, -1.0)
+    with pytest.raises(TypeError):
+        testgal = Galaxy(name, fluxlist, None)
+

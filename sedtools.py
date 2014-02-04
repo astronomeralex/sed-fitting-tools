@@ -94,6 +94,7 @@ class Galaxy(object):
                 logging.info("Galaxy name cast from " + str(nametype) + "to string: name is " + name)
             except ValueError:
                 raise ValueError("Galaxy name input of type " + str(nametype) + " cannot be cast to string")
+        #TODO: make sure name is also a valid filename
             
         if type(redshift) != float:
             try: 
