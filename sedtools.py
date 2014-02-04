@@ -7,8 +7,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import copy
 import logging
-import pp
 import os
+try:
+    import pp
+except ImportError:
+    print "module pp not available -- cannot use local backend"
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
