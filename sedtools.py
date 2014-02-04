@@ -153,8 +153,8 @@ class SEDfitter(object):
         
         """
         sedphot = []
-        redlim = self.photlims[0]
-        bluelim = self.photlims[1]
+        bluelim = self.photlimits[0]
+        redlim = self.photlimits[1]
         for i in galaxy.sedfluxlist:
             if (i.filter.short10 > bluelim) and (i.filter.long10 < redlim):
                 sedphot.append(i)
@@ -175,11 +175,14 @@ class GalMC(SEDfitter):
         depfile is the file dependencies needed for the sedfit
         currently assume depfile is a zipped file
         """
+        #TODO add path variable to inputs to make the directory structure more
+        #flexible
+        
         #see if input paramfile exists TODO: make sure paramfile is sane?
         try:
             self.paramfilename = paramfilename
             paramfileobj = open(self.paramfilename)
-            self.paramfile = paramfileobj.readlines()
+            self.paramfile = paramfileobj.read()
             paramfileobj.close()
         except IOError:
             raise IOError(paramfilename + " not found")
