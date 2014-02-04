@@ -55,13 +55,12 @@ class Filter(object):
             self.central = waves[trans.index(max(trans))]
             trans = np.array(trans)
             waves = np.array(waves)
+            #TODO: add sanity checks here for waves and transmission (>0, sorted)
+            
             #normalize transmission
             trans = trans / trans.max()
             self.transmission = trans
-            self.waves = waves
-            #TODO: add sanity checks here for waves and transmission (>0, etc)
-            
-            
+            self.waves = waves            
             #now find longest wavelength at 10% transmission
             #this is useful for determining if NIR filters could be contaminated by
             #3.3um PAH feature

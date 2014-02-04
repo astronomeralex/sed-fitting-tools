@@ -26,8 +26,13 @@ def test_filter_class():
     assert hasattr(filterobj, 'long10')
     assert hasattr(filterobj, 'short10')
     
-#def test_filter_badinputs():
-#    
+def test_filter_badinputs():
+    with pytest.raises(ValueError):
+        f = Filter("test_data/SubB.negtrans.res")
+    with pytest.raises(ValueError):
+        f = Filter("test_data/SubB.negwave.res")
+    with pytest.raises(ValueError):
+        f = Filter("test_data/SubB.outoforder.res")    
     
 def test_galaxy_class():
     f1 = Flux(5.0,1.0,'test_data/SubB.res')
