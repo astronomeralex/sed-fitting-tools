@@ -8,10 +8,8 @@ import numpy as np
 import copy
 import logging
 import os
-try:
-    import pp
-except ImportError:
-    print "module pp not available -- cannot use local backend"
+import pp
+import astropy.cosmology 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
