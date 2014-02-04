@@ -213,6 +213,42 @@ class GalMC(SEDfitter):
             outline = centralwave + ' ' + flux + ' ' + err + '\n'
             datafile.write(outline)
         datafile.close()
+
+    def randparams(self):
+        """
+        ramdomly sets the starting parameters that can be varied uniformly between their 
+        lower and upper values
+        """     
+        for i in self.params:
+            if self.params[i][3] > 0: #this checks to see if the parameter has been hardcoded
+                self.params[i][0] = random.uniform(self.params[i][1],self.params[i][2])
+        
+
+    def writeparams(self,chainnum):
+        """
+        this writes out the params file
+        chainnum is an int that is the number of the chain
+        """
+        defaultparamsfile = open('../' + self.paramfile)
+        defaultparams = defaultparamsfile.read()
+        defaultparamsfile.close()
+        output= []
+        #each entry of output is a line in the params file
+        output.append('chain root = ' + 'hps' + str(self.hpsid) + '_' + str(chainnum))
+        output.append('Data File = hps' + str(self.hpsid) + '.dat')
+        #fitting para
+        for i in self.params:
+            outline = i + ' = ' + str(self.params[i][0]) + ', ' + str(self.params[i][1]) + ', ' + str(self.params[i][2]) + ', ' + str(self.params[i][3])
+            output.append(outline)
+        #now for the filters
+        for i,fluxobj in enumerate(self.phot):
+            output.append('filter('+str(i+1)+') = ../' + fluxobj.filter.transfile)
+        
+        outputfile = open(str(self.hpsid) + '_' + str(chainnum) + '.ini','w')
+        outputfile.write(defaultparams)
+        for i in output:
+            outputfile.write(i + '\n')
+        outputfile.close()
         
     def submit(self, backend, galaxy, numchains, sedparaminfo):
         """
@@ -232,12 +268,17 @@ class GalMC(SEDfitter):
         assert type(numchains) == int
         assert numchains > 0
         
+        #and clean the galaxy photometry
+        self.cleanphotometry(galaxy)
+        
         #it assumes that it is SED fitting in a new directory and will overwrite previous sed versions
         #make the new directory
         rootdir = os.getcwd()
         galaxydir = str(galaxy.name)
         os.mkdir(hpsdir)
         os.chdir(hpsdir)
+        
+        self.writedata(galaxy)
         
         
         
