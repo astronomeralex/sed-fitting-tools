@@ -11,4 +11,12 @@ def test_flux_class():
     assert_almost_equal(fluxobj.flux,5.0)
     assert_almost_equal(fluxobj.err,1.0)
     
-    
+def test_filter_class():
+    filterobj = Filter("test_data/SubB.res")
+    assert type(filterobj) == Filter
+    assert hasattr(filterobj, 'transfile')
+    assert hasattr(filterobj, 'central')
+    assert hasattr(filterobj, 'transmission')
+    assert hasattr(filterobj, 'waves')
+    assert hasattr(filterobj, 'long10')
+    assert hasattr(filterobj, 'short10')

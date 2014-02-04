@@ -57,6 +57,9 @@ class Filter(object):
             trans = trans / trans.max()
             self.transmission = trans
             self.waves = waves
+            #TODO: add sanity checks here for waves and transmission (>0, etc)
+            
+            
             #now find longest wavelength at 10% transmission
             #this is useful for determining if NIR filters could be contaminated by
             #3.3um PAH feature
