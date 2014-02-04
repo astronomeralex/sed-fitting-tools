@@ -46,8 +46,13 @@ class Filter(object):
             waves = transmission[:,0]
             trans = transmission[:,1]
             self.central = waves[np.argmax(trans)]
-            #TODO: add sanity checks here for waves and transmission (>0, sorted)
-            
+            #sanity checks for waves and transmission (>0, sorted)
+            if not np.all(waves > 0):
+                raise ValueError("One of more wavelengths is negative")
+            if not np.all(trans > 0):
+                raise ValueError("One or more transmission values is negative")
+            if not np.all( waves == np.sort(waves) ):
+                raise ValueError("Transmission file wavelengths are not sorted")
             #normalize transmission
             trans = trans / trans.max()
             self.transmission = trans
