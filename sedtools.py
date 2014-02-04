@@ -41,20 +41,11 @@ class Filter(object):
         self.transfile = bandpassfile #the location of the transmission file
         #now check and see if the transmission file exists
         if os.path.exists(self.transfile):
-            transfile = open(self.transfile)
-            transmission = transfile.readlines()
-            transfile.close()
-            waves = []
-            trans = []
-            for i,line in enumerate(transmission):
-                transmission[i]=line.split()
-                transmission[i][0] = float(transmission[i][0])
-                transmission[i][1] = float(transmission[i][1])
-                waves.append(transmission[i][0])
-                trans.append(transmission[i][1])
-            self.central = waves[trans.index(max(trans))]
-            trans = np.array(trans)
-            waves = np.array(waves)
+            transmission = np.loadtxt(self.transfile)
+            assert transmission.shape[-1] == 2
+            waves = transmission[:,0]
+            trans = transmission[:,1]
+            self.central = waves[np.argmax(trans)]
             #TODO: add sanity checks here for waves and transmission (>0, sorted)
             
             #normalize transmission
