@@ -323,6 +323,14 @@ class PBSBackend(ComputingBackend):
         'echo " "' , 'echo "Job started on `hostname` at `date`"']
         postamble is list -- ['echo "Job Ended at `date`"', 'echo " "']
         """
+        if type(preamble) != list: raise TypeError("Preamble should be a list")
+        if type(postamble) != list: raise TypeError("Postamble should be a list")
+        for i in preamble:
+            if type(i) != str:
+                raise TypeError("preamble entries should be strings")
+        for i in postamble:
+            if type(i) != str:
+                raise TypeError("postamble entries should be strings")
         self.preamble = preamble
         self.postamble = postamble
         
@@ -349,11 +357,13 @@ class LocalBackend(ComputingBackend):
     """
     def __init__(self,**kwargs):
         """
+        kwargs pass directly to pp.Server
         used pp for local stuffs
         """
-        self.ppserver = pp.Server(kwargs)
+        self.ppserver = pp.Server(**kwargs)
         
-        
+    def run(self):
+        pass
 
 
 

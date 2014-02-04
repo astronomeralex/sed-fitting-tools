@@ -94,4 +94,33 @@ def test_galmc_badinputs():
         testgalmc = GalMC(paramfile, depfile, (-1, 2))
     with pytest.raises(AssertionError):
         testgalmc = GalMC(paramfile, depfile, (1,2,3,4))
+        
+def test_pbsbackend_class():
+    preamble =  ['#PBS -l nodes=1','#PBS -l walltime=96:00:00', 
+        '#PBS -q lionxf-yuexing','#PBS -j oe', 'cd $PBS_O_WORKDIR',
+        'echo " "' , 'echo "Job started on `hostname` at `date`"']
+    postamble = ['echo "Job Ended at `date`"', 'echo " "']
+    testpbs = PBSBackend(preamble,postamble)
+    assert type(testpbs) == PBSBackend
+    assert hasattr(testpbs,"preamble")
+    assert hasattr(testpbs,"postamble")  
+    
+def test_pbsbackend_badinputs():
+    preamble =  ['#PBS -l nodes=1','#PBS -l walltime=96:00:00', 
+        '#PBS -q lionxf-yuexing','#PBS -j oe', 'cd $PBS_O_WORKDIR',
+        'echo " "' , 'echo "Job started on `hostname` at `date`"']
+    postamble = ['echo "Job Ended at `date`"', 'echo " "']
+    with pytest.raises(TypeError):
+        testpbs = PBSBackend(5,postamble)
+    with pytest.raises(TypeError):
+        testpbs = PBSBackend(preamble, "moose")
+    with pytest.raises(TypeError):
+        testpbs = PBSBackend([5],postamble)
+    with pytest.raises(TypeError):
+        testpbs = PBSBackend(preamble,[4.567])
+        
+def test_localbackend_class():
+    testlocal = LocalBackend(ncpus = 4)
+    assert type(testlocal) == LocalBackend
+    assert hasattr(testlocal, "ppserver")
     
