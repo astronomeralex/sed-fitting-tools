@@ -8,8 +8,9 @@ import numpy as np
 import copy
 import logging
 import os
-import pp
-import astropy.cosmology 
+import pp 
+import random
+import subprocess
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -170,7 +171,8 @@ class GalMC(SEDfitter):
     def __init__(self, paramfilename, depfile, photlimits = (0,30000)):
         """
         paramfilename is the parameter file
-        depfile is the file or folder of dependencies needed for the sedfit
+        depfile is the file dependencies needed for the sedfit
+        currently assume depfile is a zipped file
         """
         #see if input paramfile exists TODO: make sure paramfile is sane?
         try:
@@ -183,15 +185,7 @@ class GalMC(SEDfitter):
             
         #see if dependent file path exists and is a directory or a file
         if os.path.exists(depfile):
-            if os.path.isfile(depfile):
-                self.depfile = depfile
-                self.deptype = 'file'
-            elif os.path.isdir(depfile):
-                self.depfile = depfile
-                self.deptype = "dir"
-            else:
-                raise IOError(depfile + " isn't a file or directory...something \
-                has gone terribly wrong")
+            self.depfile = depfile
         else:
             raise IOError(depfile + "doesn't exist")
         
@@ -224,28 +218,25 @@ class GalMC(SEDfitter):
                 self.params[i][0] = random.uniform(self.params[i][1],self.params[i][2])
         
 
-    def writeparams(self,chainnum):
+    def writeparams(self, galaxy, chainnum):
         """
         this writes out the params file
         chainnum is an int that is the number of the chain
         """
-        defaultparamsfile = open('../' + self.paramfile)
-        defaultparams = defaultparamsfile.read()
-        defaultparamsfile.close()
         output= []
         #each entry of output is a line in the params file
-        output.append('chain root = ' + 'hps' + str(self.hpsid) + '_' + str(chainnum))
-        output.append('Data File = hps' + str(self.hpsid) + '.dat')
-        #fitting para
+        output.append('chain root = ' + str(galaxy.name) + '_' + str(chainnum))
+        output.append('Data File = ' + str(galaxy.name) + '.dat')
+        #fitting params
         for i in self.params:
             outline = i + ' = ' + str(self.params[i][0]) + ', ' + str(self.params[i][1]) + ', ' + str(self.params[i][2]) + ', ' + str(self.params[i][3])
             output.append(outline)
         #now for the filters
-        for i,fluxobj in enumerate(self.phot):
+        for i,fluxobj in enumerate(galaxy.cleansedphot):
             output.append('filter('+str(i+1)+') = ../' + fluxobj.filter.transfile)
         
-        outputfile = open(str(self.hpsid) + '_' + str(chainnum) + '.ini','w')
-        outputfile.write(defaultparams)
+        outputfile = open(str(galaxy.name) + '_' + str(chainnum) + '.ini','w')
+        outputfile.write(self.paramfile)
         for i in output:
             outputfile.write(i + '\n')
         outputfile.close()
@@ -264,6 +255,9 @@ class GalMC(SEDfitter):
         sedparaminfo['Met']=[-0.7,-2.29,0.45,0.0]
         sedparaminfo['Red']=[obj.z,0.0,1.5,0.0]
         """
+        
+        self.params = sedparaminfo
+        
         #first some sanity checks on the inputs
         assert type(numchains) == int
         assert numchains > 0
@@ -275,11 +269,31 @@ class GalMC(SEDfitter):
         #make the new directory
         rootdir = os.getcwd()
         galaxydir = str(galaxy.name)
-        os.mkdir(hpsdir)
-        os.chdir(hpsdir)
+        os.mkdir(galaxydir)
+        os.chdir(galaxydir)
         
         self.writedata(galaxy)
         
+        #now its time to write out the param files for each of the chains we want
+        for i in xrange(numchains):
+            if i>0:
+                self.randparams()
+                self.writeparams(galaxy, i)
+            else:
+                self.writeparams(galaxy, i)
+                
+        depcommands = []
+        #this split is to get the filename, not the full path
+        localname = self.depfile.split('/')[-1]
+        depcommands.append('cp ' + self.depfile + " .")
+        depcommands.append('unzip ' + localname )
+        depcommands.append('rm -rf ' + localname)
+        
+        commandlist = ['./MCMCfit ' + str(galaxy.name) + '_' + str(i) + '.ini' for i in xrange(numchains)]
+        
+        backend.run(depcommands, commandlist)
+        
+        os.chdir(rootdir)
         
         
 
@@ -298,9 +312,32 @@ class PBSBackend(ComputingBackend):
     """
     
     """
-    
-    def run(self):
-        pass
+    def __init__(self, preamble, postamble):
+        """
+        preamble is list -- ['#PBS -l nodes=1','#PBS -l walltime=96:00:00', 
+        '#PBS -q lionxf-yuexing','#PBS -j oe', 'cd $PBS_O_WORKDIR',
+        'echo " "' , 'echo "Job started on `hostname` at `date`"']
+        postamble is list -- ['echo "Job Ended at `date`"', 'echo " "']
+        """
+        self.preamble = preamble
+        self.postamble = postamble
+        
+    def run(self, depdirections, commandlist, scriptname = "sed.pbs"):
+        """
+        depdirections and commandlist are lists. each entry is a single command
+        """
+        
+        pbsout = self.preamble + depdirections + commandlist + self.postamble
+                
+        pbsfile = open(scriptname,'w')
+        for i in pbsout:
+            pbsfile.write(i + '\n')
+        pbsfile.close()
+        
+        proc = ['qsub','sed.pbs']
+        
+        subprocess.call(proc)
+        
     
 class LocalBackend(ComputingBackend):
     """
