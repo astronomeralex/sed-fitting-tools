@@ -26,6 +26,9 @@ def test_filter_class():
     assert hasattr(filterobj, 'long10')
     assert hasattr(filterobj, 'short10')
     
+#def test_filter_badinputs():
+#    
+    
 def test_galaxy_class():
     f1 = Flux(5.0,1.0,'test_data/SubB.res')
     f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
@@ -61,3 +64,29 @@ def test_galaxy_badinputs():
     with pytest.raises(TypeError):
         testgal = Galaxy(name, fluxlist, None)
 
+def test_galmc_class():
+    paramfile = 'test_data/o2default.ini'
+    depfile = "test_data/empty.depfile"
+    photlimits = (0,30000)
+    testgalmc = GalMC(paramfile, depfile, photlimits)
+    assert type(testgalmc) == GalMC
+    assert hasattr(testgalmc, "paramfilename")
+    assert hasattr(testgalmc, "paramfile")
+    assert hasattr(testgalmc, "depfile")
+    assert hasattr(testgalmc, "photlimits")
+    
+def test_galmc_badinputs():
+    paramfile = 'test_data/o2default.ini'
+    depfile = "test_data/empty.depfile"
+    photlimits = (0,30000)
+    with pytest.raises(IOError):
+        testgalmc = GalMC("", depfile, photlimits)
+    with pytest.raises(IOError):
+        testgalmc = GalMC(paramfile, "", photlimits)
+    with pytest.raises(TypeError):
+        testgalmc = GalMC(paramfile, depfile, (0))
+    with pytest.raises(AssertionError):
+        testgalmc = GalMC(paramfile, depfile, (-1, 2))
+    with pytest.raises(AssertionError):
+        testgalmc = GalMC(paramfile, depfile, (1,2,3,4))
+    

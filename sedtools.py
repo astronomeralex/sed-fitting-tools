@@ -142,12 +142,12 @@ class Galaxy(object):
 
 class SEDfitter(object):
     __metaclass__ = ABCMeta
-    
-    @abstractmethod
-    def prepare(self):
-        """this method will make any necessary folders and files
-        and the job will be ready to submit"""
-    
+#    
+#    @abstractmethod
+#    def prepare(self):
+#        """this method will make any necessary folders and files
+#        and the job will be ready to submit"""
+#    
     @abstractmethod
     def submit(self):
         """this method will submit the galaxy for 
@@ -193,9 +193,13 @@ class GalMC(SEDfitter):
             self.depfile = depfile
         else:
             raise IOError(depfile + "doesn't exist")
-        
-        assert len(photlimits) == 2
+        try:
+            assert len(photlimits) == 2
+        except TypeError:
+            raise TypeError("Photlimits is not a sequence")
         assert photlimits[0] < photlimits[1]
+        assert (photlimits[0] >= 0) and (photlimits[1] >=0)
+        
         self.photlimits = photlimits
         
     
