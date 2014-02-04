@@ -198,6 +198,7 @@ class GalMC(SEDfitter):
         assert len(photlimits) == 2
         assert photlimits[0] < photlimits[1]
         self.photlimits = photlimits
+        
     
     def writedata(self, galaxy):
         """
@@ -213,9 +214,19 @@ class GalMC(SEDfitter):
             datafile.write(outline)
         datafile.close()
         
-    def submit(self, backend, galaxy, numchains):
+    def submit(self, backend, galaxy, numchains, sedparaminfo):
         """
+        example sedparaminfo
+        maxage = cosmology_distance.tz(obj.z,0.7,0.7,0.3,0.0) #this is in years
         
+        logmaxage = np.log(maxage)
+        sedparaminfo = {}
+        sedparaminfo['Mas']=[16.,9.,35.,0.5]
+        sedparaminfo['Age']=[16.,12.,logmaxage,0.5]
+        sedparaminfo['Tau']=[-0.100,-5.,15.,0.0]
+        sedparaminfo['EBV']=[0.1,0.0,1.0,0.04]
+        sedparaminfo['Met']=[-0.7,-2.29,0.45,0.0]
+        sedparaminfo['Red']=[obj.z,0.0,1.5,0.0]
         """
         #first some sanity checks on the inputs
         assert type(numchains) == int
