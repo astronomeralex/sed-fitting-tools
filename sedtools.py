@@ -188,7 +188,7 @@ class GalMC(SEDfitter):
             raise IOError(paramfilename + " not found")
             
         if os.path.exists(depfile):
-            self.depfile = depfile
+            self.depfile = os.path.abspath(depfile)
         else:
             raise IOError(depfile + "doesn't exist")
         try:
@@ -292,7 +292,7 @@ class GalMC(SEDfitter):
         depcommands = []
         #this split is to get the filename, not the full path
         localname = self.depfile.split('/')[-1]
-        depcommands.append('cp ' + os.path.abspath(self.depfile) + " .")
+        depcommands.append('cp ' + self.depfile + " .")
         depcommands.append('unzip ' + localname )
         depcommands.append('rm -rf ' + localname)
         
