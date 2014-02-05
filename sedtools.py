@@ -49,7 +49,7 @@ class Filter(object):
             #sanity checks for waves and transmission (>0, sorted)
             if not np.all(waves > 0):
                 raise ValueError("One of more wavelengths is negative")
-            if not np.all(trans > 0):
+            if not np.all(trans >= 0):
                 raise ValueError("One or more transmission values is negative")
             if not np.all( waves == np.sort(waves) ):
                 raise ValueError("Transmission file wavelengths are not sorted")
