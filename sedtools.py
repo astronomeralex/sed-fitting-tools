@@ -292,7 +292,7 @@ class GalMC(SEDfitter):
         depcommands = []
         #this split is to get the filename, not the full path
         localname = self.depfile.split('/')[-1]
-        depcommands.append('cp ' + self.depfile + " .")
+        depcommands.append('cp ' + os.path.abspath(self.depfile) + " .")
         depcommands.append('unzip ' + localname )
         depcommands.append('rm -rf ' + localname)
         
