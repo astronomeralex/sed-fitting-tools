@@ -159,10 +159,10 @@ class SEDfitter(object):
         bluelim = self.photlimits[0]
         redlim = self.photlimits[1]
         for i in galaxy.sedfluxlist:
-            if (i.filter.short10 > bluelim) and (i.filter.long10 < redlim):
+            if (i.filter.short10 > bluelim*(1 + galaxy.z)) and (i.filter.long10 < redlim*(1 + galaxy.z)):
                 sedphot.append(i)
             else:
-                if i.filter.short10 < bluelim:
+                if i.filter.short10 < bluelim*(1 + galaxy.z):
                     logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too blue")
                 else:
                     logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too red")
