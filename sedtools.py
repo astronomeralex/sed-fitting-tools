@@ -8,7 +8,10 @@ import numpy as np
 import copy
 import logging
 import os
-import pp 
+try: 
+    import pp 
+except ImportError:
+    pass
 import random
 import subprocess
 
