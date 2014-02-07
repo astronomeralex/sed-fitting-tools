@@ -344,6 +344,7 @@ class PBSBackend(ComputingBackend):
         """
         depdirections and commandlist are lists. each entry is a single command
         """
+        #TODO: add way to add or edit preamble or postamble
         
         pbsout = self.preamble + depdirections + commandlist + self.postamble
                 
