@@ -49,7 +49,7 @@ def test_galaxy_class():
     assert len(testgal.fluxlist) == 3
     assert len(testgal.sedfluxlist) == 2
     #test sorting of sedfluxlist
-    for i in xrange(len(testgal.sedfluxlist) - 1):
+    for i in range(len(testgal.sedfluxlist) - 1):
         assert testgal.sedfluxlist[i].filter.central < testgal.sedfluxlist[i + 1].filter.central
         
 def test_galaxy_badinputs():

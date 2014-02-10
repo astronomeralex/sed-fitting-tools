@@ -204,7 +204,7 @@ class HpsObj(object):
                                             
         else:
             if not silent:
-                print "photometry not found for " + str(hpsid)
+                print(("photometry not found for " + str(hpsid)))
             self.field=''
                 
         #now i will get the half light radius
@@ -281,7 +281,7 @@ class HpsObj(object):
             if 'linenum' in locals():        
                 #time to get the R values
                 Rm1s = []
-                for i in xrange(1,50):
+                for i in range(1,50):
                     line = convlines[linenum + i].split()
                     if len(line) < 2:
                         break
@@ -349,14 +349,14 @@ class HpsObj(object):
                 self.redchisq = self.chisq / float(numphot - numsedparams - 1)
             else:
                 if not silent:
-                    print "Cannot calculate reduced chi squared"
+                    print("Cannot calculate reduced chi squared")
             
             if not silent:
-                print str(self.id) + ": found"
+                print((str(self.id) + ": found"))
                 
         else:
             if not silent:
-                print str(self.id) + ": SED info or folder doesn't exist"
+                print((str(self.id) + ": SED info or folder doesn't exist"))
                 
     def extinction_correct(self):
         """
@@ -482,7 +482,7 @@ class Filter(object):
             
         else:
             if not silent:
-                print "Can't find transmission file at " + self.transfile
+                print(("Can't find transmission file at " + self.transfile))
         
     
     
@@ -521,7 +521,7 @@ class GalMC(object):
         self.writedata()
         
         #now its time to write out the param files for each of the chains we want
-        for i in xrange(self.numchains):
+        for i in range(self.numchains):
             if i>0:
                 self.randparams()
                 self.writeparams(i)
@@ -531,7 +531,7 @@ class GalMC(object):
         #now i will write out the pbs file
         pbsout = ['#PBS -l nodes=1','#PBS -l walltime=96:00:00','#PBS -q lionxf-yuexing','#PBS -j oe','cd $PBS_O_WORKDIR',
         'echo " "','echo "Job started on `hostname` at `date`"','cp ../SED.zip .','unzip SED.zip','rm SED.zip']
-        for i in xrange(self.numchains):
+        for i in range(self.numchains):
             line = './MCMCfit ' + str(self.hpsid) + '_' + str(i) + '.ini'
             pbsout.append(line)
         if email:
@@ -632,7 +632,7 @@ def runGetDist(folders,distparamsfile='distparams.ini'):
         distparout.close()
         
         #now its time to rename the chains
-        for i in xrange(4):
+        for i in range(4):
             proc=['mv','hps' + folder + '_' + str(i) + '_chain.txt','hps' + folder + '_' + str(i) + '.txt']
             subprocess.call(proc)
             
@@ -646,7 +646,7 @@ def runGetDist(folders,distparamsfile='distparams.ini'):
         pyfiles = glob('hps' + folder + '*.py')
 
         for i in pyfiles:
-            execfile(i)
+            exec(compile(open(i).read(), i, 'exec'))
         
         os.chdir(root)
         
@@ -709,7 +709,7 @@ def makehpslist(silent=False):
     """
     
     hpslist = []
-    for i in xrange(1,480):
+    for i in range(1,480):
         hpslist.append(HpsObj(i,silent))
     
     
@@ -857,9 +857,9 @@ def checkcomplete(folders):
             else:
                 killedarr.append(False)
         if len(killedarr) == 0:
-            print i
+            print(i)
         elif False not in killedarr:
-            print i
+            print(i)
 
 def hasfilter(hpslist,filtername):
     """
@@ -888,7 +888,7 @@ def removefilter(hpslist,filtername):
             if fluxobj.filter.name != filtername:
                 newphot.append(fluxobj)
             else:
-                print filtername + " removed from " + str(obj.id)
+                print((filtername + " removed from " + str(obj.id)))
         obj.photometry = newphot
 
     return hpslist
@@ -904,7 +904,7 @@ def removexray(hpslist):
         if i.xraycounter == '':
             output.append(i)
         else:
-            print "removed " + str(i.id) + ' ' + i.xraycounter
+            print(("removed " + str(i.id) + ' ' + i.xraycounter))
     
     return output
     

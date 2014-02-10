@@ -138,14 +138,7 @@ class Galaxy(object):
 
 ################################################################################
 
-class SEDfitter(object):
-    __metaclass__ = ABCMeta
-#    
-#    @abstractmethod
-#    def prepare(self):
-#        """this method will make any necessary folders and files
-#        and the job will be ready to submit"""
-#    
+class SEDfitter(object, metaclass=ABCMeta):
     @abstractmethod
     def submit(self):
         """this method will submit the galaxy for 
@@ -285,7 +278,7 @@ class GalMC(SEDfitter):
         self.writedata(galaxy)
         
         #now its time to write out the param files for each of the chains we want
-        for i in xrange(numchains):
+        for i in range(numchains):
             if i>0:
                 self.randparams()
                 self.writeparams(galaxy, i)
@@ -299,7 +292,7 @@ class GalMC(SEDfitter):
         depcommands.append('unzip ' + localname )
         depcommands.append('rm -rf ' + localname)
         
-        commandlist = ['./MCMCfit ' + str(galaxy.name) + '_' + str(i) + '.ini' for i in xrange(numchains)]
+        commandlist = ['./MCMCfit ' + str(galaxy.name) + '_' + str(i) + '.ini' for i in range(numchains)]
         
         backend.run(depcommands, commandlist)
         
@@ -309,9 +302,7 @@ class GalMC(SEDfitter):
 
 ################################################################################
 
-class ComputingBackend(object):
-    __metaclass__ = ABCMeta
-    
+class ComputingBackend(object, metaclass=ABCMeta):
     @abstractmethod
     def run(self):
         """
