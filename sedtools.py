@@ -443,7 +443,7 @@ class GalMC(SEDfitter):
             else:
                 logging.warning("Cannot calculate reduced chi squared")
             
-            logging.info(galaxy.name + ": found")
+            logging.info(galaxy.name + ": SED fit found")
                 
         else:
             logging.warning(galaxy.name + ": SED info or folder doesn't exist")
