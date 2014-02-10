@@ -436,17 +436,17 @@ class GalMC(SEDfitter):
             galaxy.likestats = likestats        
                     
             galaxy.chisq = galaxy.mloglike*2. #note that this is only valid for a flat prior
-            numphot = len(galaxy.cleansedphotometry)
+            numphot = len(galaxy.cleansedphot)
             numsedparams = len(galaxy.sedstats) - 1 #since mass is included twice
             if numphot - 1 > numsedparams:
                 galaxy.redchisq = galaxy.chisq / float(numphot - numsedparams - 1)
             else:
                 logging.warning("Cannot calculate reduced chi squared")
             
-            logging.info((str(self.id) + ": found"))
+            logging.info(galaxy.name + ": found")
                 
         else:
-            logging.warning((str(self.id) + ": SED info or folder doesn't exist"))
+            logging.warning(galaxy.name + ": SED info or folder doesn't exist")
 
 ################################################################################
 
