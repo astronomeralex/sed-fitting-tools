@@ -196,8 +196,8 @@ class GalMC(SEDfitter):
         
         self.photlimits = photlimits
         
-    
-    def writedata(self, galaxy):
+    @staticmethod
+    def writedata(galaxy):
         """
         this method will write out the data file in standard GalMC format 
         wavelength flux density error (in microJy)
@@ -297,8 +297,48 @@ class GalMC(SEDfitter):
         backend.run(depcommands, commandlist)
         
         os.chdir(rootdir)
+    
+    @staticmethod
+    def runGetDist(folders,numchains = 4,distparamsfile='distparams.ini'):
+        """
+        this will run GetDist on the chains outputed from the fit method of the GalMC class. it also will rename the chain
+        files so they work with getdist
         
+        folders is a list where each element is a string that is the name of a folder where getdist should be run
+        it is recommended that glob is used to make this list
         
+        distparamsfile is the file name of the parameter file for getdist
+        this file cannot have the chain root included in it
+        the programs will write that so it works for each folder
+        """
+        
+        distparams = open(distparamsfile).read()
+        
+        root = os.getcwd()
+        
+        for folder in folders:
+            os.chdir(folder)
+            #write out the distparams file
+            distparout = open('distparams.ini','w')
+            distparout.write('file_root = ' + folder + '\n')
+            distparout.write(distparams)
+            distparout.close()
+            
+            #now its time to rename the chains
+            for i in range(numchains):
+                proc=['mv',folder + '_' + str(i) + '_chain.txt',folder + '_' + str(i) + '.txt']
+                subprocess.call(proc)
+                
+            #now its time to run getdist!
+            #make sure its in the .bashrc file
+            subprocess.call(['getdist','distparams.ini'])
+    
+            #and now time to run the python files produced by getdist so we can have plotses
+            pyfiles = glob(folder + '*.py')
+            for i in pyfiles:
+                exec(compile(open(i).read(), i, 'exec'))
+            
+            os.chdir(root)
 
 ################################################################################
 
