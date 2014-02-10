@@ -343,6 +343,110 @@ class GalMC(SEDfitter):
                 logging.info("Plots not made")
             
             os.chdir(root)
+    
+    @staticmethod
+    def getsedfit(galaxy,root='.'):
+        """
+        this method will fetch the results of the sed fit. root is the directory
+        location that contains the folders that each contain the results of the
+        sed fit run by sedfit. the results have to be analyzed by getdist prior
+        to the running of this method
+        this is designed so if the SED results don't exist, it will exit gracefully
+        with a message and will not throw an error
+        this is so it can be run on a large sample easily without try statements
+        """
+        
+        folder = root + '/' + str(galaxy.name)
+        
+        #first, check to make sure the folder exists and that files from getdist exist
+        if os.path.exists(folder) and os.path.exists(folder + '/' + galaxy.name + '.margestats'):
+            #read in coverge file -- currently will take R-1 values
+            convfile = open(folder + '/' + galaxy.name + '.converge')
+            convlines = convfile.readlines()
+            convfile.close()
+            
+            #TODO -- see if there's a better way to do this
+            #now i need to find the line before R-1 value
+            for i,line in enumerate(convlines):
+                if 'var(mean)/mean(var) for eigenvalues of covariance of means' in line:
+                    linenum = i
+                    break
+            if 'linenum' in locals():        
+                #time to get the R values
+                Rm1s = []
+                for i in range(1,50):
+                    line = convlines[linenum + i].split()
+                    if len(line) < 2:
+                        break
+                    else:
+                        Rm1s.append(float(line[1]))
+            
+                galaxy.Rm1s = Rm1s        
+                #find the largest R value
+                galaxy.Rm1 = max(galaxy.Rm1s)
+                
+            else:
+                galaxy.Rm1 = None
+                galaxy.Rm1s = None
+                
+            #now time to read in the marginalized stats
+            margefile = open(folder + '/' + galaxy.name + '.margestats')
+            margelines = margefile.readlines()
+            margefile.close()
+            
+            sedstats = {}
+            
+            for i,line in enumerate(margelines):
+                if i>0:
+                    stats = line.split()
+                    if len(stats) < 2:
+                        break
+                    else:
+                        paramname = stats[-1]
+                        sedstats[paramname] = {}
+                        sedstats[paramname]['mean'] = float(stats[1])
+                        sedstats[paramname]['stdev'] = float(stats[2])
+                        sedstats[paramname]['lower1'] = float(stats[3])
+                        sedstats[paramname]['upper1'] = float(stats[4])
+                        sedstats[paramname]['lower2'] = float(stats[5])
+                        sedstats[paramname]['upper2'] = float(stats[6])
+            
+            galaxy.sedstats = sedstats
+            
+            #now get the best fit parameters from the likestats file
+            likefile = open(folder + '/' + galaxy.name + '.likestats')
+            likelines = likefile.readlines()
+            likefile.close()
+            
+            likestats = {}
+            
+            for i,line in enumerate(likelines):
+                stats = line.split()
+                if i == 0:
+                    galaxy.mloglike = float(stats[-1])
+                elif i>2 and len(stats) > 1:
+                    paramname = stats[-1]
+                    likestats[paramname] = {}
+                    likestats[paramname]['best'] = float(stats[1])
+                    likestats[paramname]['lower1'] = float(stats[2])
+                    likestats[paramname]['upper1'] = float(stats[3])
+                    likestats[paramname]['lower2'] = float(stats[4])
+                    likestats[paramname]['upper2'] = float(stats[5])
+                    
+            galaxy.likestats = likestats        
+                    
+            galaxy.chisq = galaxy.mloglike*2. #note that this is only valid for a flat prior
+            numphot = len(galaxy.cleansedphotometry)
+            numsedparams = len(galaxy.sedstats) - 1 #since mass is included twice
+            if numphot - 1 > numsedparams:
+                galaxy.redchisq = galaxy.chisq / float(numphot - numsedparams - 1)
+            else:
+                logging.warning("Cannot calculate reduced chi squared")
+            
+            logging.info((str(self.id) + ": found"))
+                
+        else:
+            logging.warning((str(self.id) + ": SED info or folder doesn't exist"))
 
 ################################################################################
 
