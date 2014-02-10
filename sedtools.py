@@ -533,3 +533,36 @@ class GetDist(SEDAnalysisTool):
         else:
             logging.warning(galaxy.name + ": SED info or folder doesn't exist")
 
+    @staticmethod
+    def getSEDparam(galaxylist,paramname,sigma = 1,tobase10 = False):
+        """
+        this will take in a list of HpsObj objects, a paramname, which is a string, and a sigma
+        sigma can either be 1 or 2 and will specify the type of error bars returned, 1 or 2 sigma
+        this will return three numpy arrays, the parameter from the SED fit for each object, 
+        lower errors and upper errors
+        """
+    
+        param = []
+        lower = []
+        upper = []
+        
+        for i in galaxylist:
+            param.append(i.sedstats[paramname]['mean'])
+            lower.append(i.sedstats[paramname]['lower' + str(sigma)])
+            upper.append(i.sedstats[paramname]['upper' + str(sigma)])
+            
+        param = np.array(param)
+        lower = np.array(lower)
+        upper = np.array(upper)
+        #coverting from values to differences from the mean
+        lower = param - lower
+        upper = upper - param
+        
+        if tobase10:
+            param = param / np.log(10)
+            lower = lower / np.log(10)
+            upper = upper / np.log(10)
+        
+        return param,lower,upper
+        
+        
