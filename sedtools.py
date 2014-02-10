@@ -392,7 +392,7 @@ class GetDist(SEDAnalysisTool):
         self.distparamsfile = distparamsfile
         self.distparams = distparams
         
-    def runGetDist(self, folders, numchains=4, makeplots=False):
+    def run(self, folders, numchains=4, makeplots=False):
         """
         this will run GetDist on the chains outputed from the fit method of the GalMC class. it also will rename the chain
         files so they work with getdist
