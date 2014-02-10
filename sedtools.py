@@ -300,7 +300,7 @@ class GalMC(SEDfitter):
         os.chdir(rootdir)
     
     @staticmethod
-    def runGetDist(folders,numchains = 4,distparamsfile='distparams.ini'):
+    def runGetDist(folders, numchains=4, distparamsfile='distparams.ini', makeplots=False):
         """
         this will run GetDist on the chains outputed from the fit method of the GalMC class. it also will rename the chain
         files so they work with getdist
@@ -335,9 +335,12 @@ class GalMC(SEDfitter):
             subprocess.call(['getdist','distparams.ini'])
     
             #and now time to run the python files produced by getdist so we can have plotses
-            pyfiles = glob(folder + '*.py')
-            for i in pyfiles:
-                exec(compile(open(i).read(), i, 'exec'))
+            if makeplots:
+                pyfiles = glob(folder + '*.py')
+                for i in pyfiles:
+                    exec(compile(open(i).read(), i, 'exec'))
+            else:
+                logging.info("Plots not made")
             
             os.chdir(root)
 
