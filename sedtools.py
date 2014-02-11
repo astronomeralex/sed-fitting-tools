@@ -15,6 +15,7 @@ except ImportError:
 import random
 import subprocess
 from glob import glob
+import shutil
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
