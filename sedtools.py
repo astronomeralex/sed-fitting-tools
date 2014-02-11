@@ -391,6 +391,7 @@ class LocalBackend(ComputingBackend):
     def run(self):
         pass
 
+################################################################################
 
 class SEDAnalysisTool(object, metaclass = ABCMeta):
     """
@@ -414,7 +415,7 @@ class GetDist(SEDAnalysisTool):
         """
         
         try:
-            distparams = open(distparamsfile).readlines()
+            distparams = open(distparamsfile).read()
         except IOError:
             raise IOError("Distparamsfile not found at " + distparamsfile)
         
