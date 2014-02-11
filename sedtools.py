@@ -606,7 +606,7 @@ class GetDist(SEDAnalysisTool):
         for i in dirs:
             os.chdir(i)
             chainroot = i
-            for j in xrange(numchains):
+            for j in range(numchains):
                 chainfile = chainroot + '_' + str(j) + '.txt'
                 #make copy of chain file to save
                 chain = np.loadtxt(chainfile)
