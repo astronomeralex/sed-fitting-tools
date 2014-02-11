@@ -24,12 +24,12 @@ class Flux(object):
     """
     this flux class will contain a single photometric measurement
     """
-    def __init__(self, flux, err, bandpassfile, units=None):
+    def __init__(self, flux, err, filterobj, units=None):
         self.flux = flux
         if err < 0:
             raise ValueError("Input error is less than zero")
         self.err = err
-        self.filter = Filter(bandpassfile)
+        self.filter = filterobj
         if units is None:
             logging.info("Units for flux object not defined")
         self.units = units
@@ -49,7 +49,6 @@ class Filter(object):
             assert transmission.shape[-1] == 2
             waves = transmission[:,0]
             trans = transmission[:,1]
-            self.central = waves[np.argmax(trans)]
             #sanity checks for waves and transmission (>0, sorted)
             if not np.all(waves > 0):
                 raise ValueError("One of more wavelengths is negative")
@@ -57,6 +56,7 @@ class Filter(object):
                 raise ValueError("One or more transmission values is negative")
             if not np.all( waves == np.sort(waves) ):
                 raise ValueError("Transmission file wavelengths are not sorted")
+            self.central = np.trapz(trans * waves, x=waves) / np.trapz(trans, x=waves)
             #normalize transmission
             trans = trans / trans.max()
             self.transmission = trans
