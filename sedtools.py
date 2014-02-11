@@ -29,7 +29,10 @@ class Flux(object):
         if err < 0:
             raise ValueError("Input error is less than zero")
         self.err = err
+        
+        #TODO -- add sanity check to make sure this is actually a filter object
         self.filter = filterobj
+        
         if units is None:
             logging.info("Units for flux object not defined")
         self.units = units
@@ -56,19 +59,44 @@ class Filter(object):
                 raise ValueError("One or more transmission values is negative")
             if not np.all( waves == np.sort(waves) ):
                 raise ValueError("Transmission file wavelengths are not sorted")
-            self.central = np.trapz(trans * waves, x=waves) / np.trapz(trans, x=waves)
+            self._central = np.trapz(trans * waves, x=waves) / np.trapz(trans, x=waves)
             #normalize transmission
             trans = trans / trans.max()
-            self.transmission = trans
-            self.waves = waves            
+            self._transmission = trans
+            self._waves = waves            
             #now find longest wavelength at 10% transmission
             #this is useful for determining if NIR filters could be contaminated by
             #3.3um PAH feature
-            self.long10 = waves[np.where(trans > 0.1)[0][-1]]
-            self.short10 = waves[np.where(trans > 0.1)[0][0]]
+            self._long10 = waves[np.where(trans > 0.1)[0][-1]]
+            self._short10 = waves[np.where(trans > 0.1)[0][0]]
             
         else:
             logging.error("Can't find transmission file at " + self.transfile)
+            
+    @property
+    def central(self):
+        """Return the central wavelength"""
+        return self._central
+        
+    @property
+    def transmission(self):
+        """Return the filter transmission array"""
+        return self._transmission
+        
+    @property
+    def waves(self):
+        """Return the filter wavelength array"""
+        return self._waves
+        
+    @property
+    def long10(self):
+        """Returns the wavelength of the red side of 10% transmission"""
+        return self._long10
+        
+    @property
+    def short10(self):
+        """Returns the wavelength of the blue side of 10% transmission"""
+        return self._short10
 
 ################################################################################
 
