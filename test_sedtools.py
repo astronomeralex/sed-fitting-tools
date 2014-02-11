@@ -3,7 +3,7 @@ from numpy.testing import assert_almost_equal
 import pytest
 
 def test_flux_class():
-    fluxobj = Flux(5.0,1.0,'test_data/SubB.res')
+    fluxobj = Flux(5.0,1.0,Filter('test_data/SubB.res'))
     assert type(fluxobj) == Flux
     assert hasattr(fluxobj, 'flux')
     assert hasattr(fluxobj, 'err')
@@ -14,7 +14,7 @@ def test_flux_class():
 
 def test_flux_badinputs():
     with pytest.raises(ValueError):
-        fluxobj = Flux(5.0, -1.0, 'test_data/SubB.res')
+        fluxobj = Flux(5.0, -1.0, Filter('test_data/SubB.res'))
     
 def test_filter_class():
     filterobj = Filter("test_data/SubB.res")
@@ -35,9 +35,9 @@ def test_filter_badinputs():
         f = Filter("test_data/SubB.outoforder.res")    
     
 def test_galaxy_class():
-    f1 = Flux(5.0,1.0,'test_data/SubB.res')
-    f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
-    f3 = Flux(20.0, 5.0,"")
+    f1 = Flux(5.0,1.0,Filter('test_data/SubB.res'))
+    f2 = Flux(10.0,1.0,Filter('test_data/UKIRTJ.res'))
+    f3 = Flux(20.0, 5.0,Filter(""))
     fluxlist = [f1,f2,f3]
     name = "test_gal"
     testgal = Galaxy(name,fluxlist,1.0)
@@ -53,9 +53,9 @@ def test_galaxy_class():
         assert testgal.sedfluxlist[i].filter.central < testgal.sedfluxlist[i + 1].filter.central
         
 def test_galaxy_badinputs():
-    f1 = Flux(5.0,1.0,'test_data/SubB.res')
-    f2 = Flux(10.0,1.0,'test_data/UKIRTJ.res')
-    f3 = Flux(20.0, 5.0,"")
+    f1 = Flux(5.0,1.0,Filter('test_data/SubB.res'))
+    f2 = Flux(10.0,1.0,Filter('test_data/UKIRTJ.res'))
+    f3 = Flux(20.0, 5.0,Filter(""))
     fluxlist = [f1,f2,f3]
     name = "test_gal"
     #testing fluxlist
