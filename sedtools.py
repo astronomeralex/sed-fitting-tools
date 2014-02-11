@@ -461,7 +461,7 @@ class GetDist(SEDAnalysisTool):
             os.chdir(root)
     
     @staticmethod
-    def getsedfit(galaxy,root='.'):
+    def get_sed_fit(galaxy,root='.'):
         """
         this method will fetch the results of the sed fit. root is the directory
         location that contains the folders that each contain the results of the
@@ -562,7 +562,7 @@ class GetDist(SEDAnalysisTool):
             logging.warning(galaxy.name + ": SED info or folder doesn't exist")
 
     @staticmethod
-    def getSEDparam(galaxylist,paramname,sigma = 1,tobase10 = False):
+    def get_sed_param(galaxylist,paramname,sigma = 1,tobase10 = False):
         """
         this will take in a list of HpsObj objects, a paramname, which is a string, and a sigma
         sigma can either be 1 or 2 and will specify the type of error bars returned, 1 or 2 sigma
@@ -592,5 +592,30 @@ class GetDist(SEDAnalysisTool):
             upper = upper / np.log(10)
         
         return param,lower,upper
+
+    @staticmethod
+    def add_sfr_to_chain(dirs,numchains=4):
+        """
+        this will add the SED SFR to all the chains in dirs
+        this assumes that runGetDist has been run on all the chains
+        """
+    
+    
+        root = os.getcwd()
+    
+        for i in dirs:
+            os.chdir(i)
+            chainroot = i
+            for j in xrange(numchains):
+                chainfile = chainroot + '_' + str(j) + '.txt'
+                #make copy of chain file to save
+                chain = np.loadtxt(chainfile)
+                shutil.copy2(chainfile,chainfile+'.old')
+                #age is 2nd column, galaxymass is 3rd (0-indexed)
+                sedsfr = np.exp(chain[:,3]) / np.exp(chain[:,2])
+                sedsfr = sedsfr.reshape(len(sedsfr),1) #make column vector for hstack
+                chain = np.hstack((chain,sedsfr))
+                np.savetxt(chainfile,chain,fmt="%0.6e")
+            os.chdir(root)
         
         
