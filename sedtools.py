@@ -2,7 +2,15 @@
 # it is designed to be modularized and be useful for many different code
 # written by Alex Hagen, a graduate student in astrophysics at penn state
 # mr.alex.hagen@gmail.com
-
+#
+# Licensed under The Academic License (https://github.com/dfm/license)
+#
+#Copyright (c) 2014 Alex Hagen
+#
+#This project includes academic-research code and documents under development.
+#You would be a fool to run any of the code.
+#Any use of the content requires citation.
+#
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import copy
