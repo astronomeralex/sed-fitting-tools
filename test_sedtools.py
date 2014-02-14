@@ -125,7 +125,6 @@ def test_pbsbackend_badinputs():
         testpbs = PBSBackend(preamble,[4.567])
         
 def test_localbackend_class():
-    testlocal = LocalBackend(ncpus = 4)
+    testlocal = LocalBackend()
     assert type(testlocal) == LocalBackend
-    assert hasattr(testlocal, "ppserver")
     

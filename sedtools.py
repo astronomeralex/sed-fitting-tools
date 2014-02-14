@@ -16,10 +16,6 @@ import numpy as np
 import copy
 import logging
 import os
-try: 
-    import pp 
-except ImportError:
-    pass
 import random
 import subprocess
 from glob import glob
@@ -402,12 +398,6 @@ class LocalBackend(ComputingBackend):
     """
     
     """
-    def __init__(self,**kwargs):
-        """
-        kwargs pass directly to pp.Server
-        used pp for local stuffs
-        """
-        self.ppserver = pp.Server(**kwargs)
         
     def run(self):
         pass
