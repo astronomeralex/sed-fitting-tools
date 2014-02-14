@@ -13,8 +13,13 @@ def test_flux_class():
     assert_almost_equal(fluxobj.err,1.0)
 
 def test_flux_badinputs():
+    f = Filter('test_data/SubB.res')
     with pytest.raises(ValueError):
-        fluxobj = Flux(5.0, -1.0, Filter('test_data/SubB.res'))
+        fluxobj = Flux(5.0, -1.0, f)
+    with pytest.raises(ValueError):
+        fluxobj = Flux(-5.0, 1.0, f)
+    with pytest.raises(TypeError):
+        fluxobj = Flux(5.0, 1.0, 'test_data/SubB.res')
     
 def test_filter_class():
     filterobj = Filter("test_data/SubB.res")

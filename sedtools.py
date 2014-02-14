@@ -3,7 +3,7 @@
 # written by Alex Hagen, a graduate student in astrophysics at penn state
 # mr.alex.hagen@gmail.com
 #
-# Licensed under The Academic License (https://github.com/dfm/license)
+#Licensed under The Academic License (https://github.com/dfm/license)
 #
 #Copyright (c) 2014 Alex Hagen
 #
@@ -34,13 +34,22 @@ class Flux(object):
     this flux class will contain a single photometric measurement
     """
     def __init__(self, flux, err, filterobj, units=None):
+        if flux < 0:
+            raise ValueError("Input flux is less than zero")
+        elif flux == 0:
+            logging.warning("The flux is set at zero; are you sure about that?")
         self.flux = flux
+        
         if err < 0:
             raise ValueError("Input error is less than zero")
+        elif err == 0:
+            logging.warning("The error is set at zero; that could cause problems...")
         self.err = err
         
-        #TODO -- add sanity check to make sure this is actually a filter object
-        self.filter = filterobj
+        if type(filterobj) == Filter:
+            self.filter = filterobj
+        else:
+            raise TypeError(str(filterobj) + "isn't a Filter object")
         
         if units is None:
             logging.info("Units for flux object not defined")
@@ -203,6 +212,10 @@ class GalMC(SEDfitter):
     """
     
     """
+    
+    #TODO -- make sure filter transmission curve has spacing greater
+    #than one angstrom
+    
     def __init__(self, paramfilename, depfile, photlimits = (0,30000)):
         """
         paramfilename is the parameter file
