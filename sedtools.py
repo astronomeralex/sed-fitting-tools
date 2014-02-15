@@ -13,7 +13,6 @@
 #
 from abc import ABCMeta, abstractmethod
 import numpy as np
-import copy
 import logging
 import os
 import random
