@@ -82,6 +82,8 @@ class Filter(object):
             #3.3um PAH feature
             self._long10 = waves[np.where(trans > 0.1)[0][-1]]
             self._short10 = waves[np.where(trans > 0.1)[0][0]]
+            #find minimum spacing of the waves array
+            self.minspacing = np.min( waves[1:] - waves[:-1] )
             
         else:
             logging.error("Can't find transmission file at " + self.transfile)
@@ -208,9 +210,6 @@ class GalMC(SEDfitter):
     
     """
     
-    #TODO -- make sure filter transmission curve has spacing greater
-    #than one angstrom
-    
     def __init__(self, paramfilename, depfile, photlimits = (0,30000)):
         """
         paramfilename is the parameter file
@@ -311,8 +310,11 @@ class GalMC(SEDfitter):
         assert type(numchains) == int
         assert numchains > 0
         
-        #and clean the galaxy photometry
+        #and clean the galaxy photometry & check the filter spacing
         self.cleanphotometry(galaxy)
+        for i in galaxy.cleansedphot:
+            if i.filter.minspacing <= 1.0:
+                raise ValueError("Filter spacing needs to be greater 1 angstrom")
         
         #it assumes that it is SED fitting in a new directory and will overwrite previous sed versions
         #make the new directory
@@ -343,6 +345,7 @@ class GalMC(SEDfitter):
         backend.run(depcommands, commandlist)
         
         os.chdir(rootdir)
+        
 
 ################################################################################
 
