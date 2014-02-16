@@ -17,7 +17,7 @@ import logging
 import os
 import random
 import subprocess
-from glob import glob
+import glob
 import shutil
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -467,7 +467,7 @@ class GetDist(SEDAnalysisTool):
     
             #and now time to run the python files produced by getdist so we can have plotses
             if makeplots:
-                pyfiles = glob(folder + '*.py')
+                pyfiles = glob.glob(folder + '*.py')
                 for i in pyfiles:
                     exec(compile(open(i).read(), i, 'exec'))
             else:
