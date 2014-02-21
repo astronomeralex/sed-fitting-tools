@@ -83,7 +83,7 @@ class Filter(object):
             self._long10 = waves[np.where(trans > 0.1)[0][-1]]
             self._short10 = waves[np.where(trans > 0.1)[0][0]]
             #find minimum spacing of the waves array
-            self.minspacing = np.min( waves[1:] - waves[:-1] )
+            self.minspacing = np.min( np.diff(waves))
             
         else:
             logging.error("Can't find transmission file at " + self.transfile)
