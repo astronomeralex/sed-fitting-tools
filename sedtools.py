@@ -200,9 +200,9 @@ class SEDfitter(object, metaclass=ABCMeta):
                 sedphot.append(i)
             else:
                 if i.filter.short10 < bluelim*(1 + galaxy.z):
-                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too blue")
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + " not included -- filter is too blue")
                 else:
-                    logging.warning("Flux measurement with filter " + i.filter.transfile + "not included -- filter is too red")
+                    logging.warning("Flux measurement with filter " + i.filter.transfile + " not included -- filter is too red")
         galaxy.cleansedphot = sedphot
         
 class GalMC(SEDfitter):
@@ -314,7 +314,7 @@ class GalMC(SEDfitter):
         self.cleanphotometry(galaxy)
         for i in galaxy.cleansedphot:
             if i.filter.minspacing <= 1.0:
-                raise ValueError("Filter spacing needs to be greater 1 angstrom")
+                raise ValueError("Filter spacing for " + str(i.filter.transfile) + " needs to be greater than 1 angstrom")
         
         #it assumes that it is SED fitting in a new directory and will overwrite previous sed versions
         #make the new directory
