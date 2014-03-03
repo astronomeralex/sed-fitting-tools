@@ -313,7 +313,7 @@ class GalMC(SEDfitter):
         #and clean the galaxy photometry & check the filter spacing
         self.cleanphotometry(galaxy)
         for i in galaxy.cleansedphot:
-            if i.filter.minspacing < 1.0:
+            if i.filter.minspacing < 0.98:
                 raise ValueError("Filter spacing for " + str(i.filter.transfile) + " needs to be greater than 1 angstrom")
         
         #it assumes that it is SED fitting in a new directory and will overwrite previous sed versions
